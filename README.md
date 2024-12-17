@@ -60,13 +60,13 @@ LINE Platform ──────► LINE Webhook ────► FastAPI Service
     │                                  ┌─────────────────┐  │
     └─────────────────────────────────►│  Event Handler  │──┘
                                        └─────────────────┘
-                                             │
-                                             │
-                                             ▼
-                                   ┌─────────────────┐
-                                   │   SharePoint    │
-                                   │  (File Storage) │
-                                   └─────────────────┘
+                                               │
+                                               │
+                                               ▼
+                                     ┌─────────────────┐
+                                     │   SharePoint    │
+                                     │  (File Storage) │
+                                     └─────────────────┘
 
 Key Components:
 1. LINE Webhook (/api/v1/webhook)
