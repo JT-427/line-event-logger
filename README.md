@@ -55,7 +55,7 @@ Client (LINE Platform) --> LINE Webhook --> FastAPI Service --> MongoDB
 1. Clone the repository
 
 ```bash
-git clone https://github.com/您的使用者名稱/儲存庫名稱.git
+git clone https://github.com/JT-427/line-event-logger.git
 cd 儲存庫名稱
 ```
 
