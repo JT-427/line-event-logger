@@ -44,8 +44,48 @@ A high-performance event logging service for LINE Platform built with FastAPI. T
 ## Architecture Overview
 
 ```plaintext
-Client (LINE Platform) --> LINE Webhook --> FastAPI Service --> MongoDB
-                                                          --> SharePoint Storage
+                                                     ┌─────────────────┐
+                                                     │                 │
+                                                     │    MongoDB      │
+                                                     │   (Events DB)   │
+                                                     │                 │
+                                                     └─────────────────┘
+                                                            ▲
+                                                            │
+                                                            │
+LINE Platform ──────► LINE Webhook ────► FastAPI Service ───┤
+    │                                          │            │
+    │                                          │            │
+    │                                          ▼            │
+    │                                  ┌─────────────────┐  │
+    └─────────────────────────────────►│  Event Handler  │──┘
+                                      └─────────────────┘
+                                             │
+                                             │
+                                             ▼
+                                   ┌─────────────────┐
+                                   │   SharePoint    │
+                                   │  (File Storage) │
+                                   └─────────────────┘
+
+Key Components:
+1. LINE Webhook (/api/v1/webhook)
+   - Receives and validates LINE platform events
+   - Handles message, group, and member events
+
+2. Event Handler (app/api/v1/endpoints)
+   - Processes incoming events asynchronously
+   - Routes different event types to appropriate handlers
+   - Manages file uploads for image messages
+
+3. Storage Layer
+   - MongoDB: Stores event logs and message history
+   - SharePoint: Handles file storage for media content
+
+4. Core Services (app/core)
+   - Configuration management
+   - Storage service integration
+   - Authentication and security
 ```
 
 ## Deployment
@@ -112,7 +152,7 @@ backend/
 │   ├── models/
 │   │   ├── message.py
 │   │   ├── group.py
-│   │   └── account.py
+│   │   └─�� account.py
 │   └── main.py
 ├── Dockerfile
 └── requirements.txt
