@@ -54,19 +54,19 @@ A high-performance event logging service for LINE Platform built with FastAPI. T
                                                             │
                                                             │
 LINE Platform ──────► LINE Webhook ────► FastAPI Service ───┤
-    │                                          │            │
-    │                                          │            │
-    │                                          ▼            │
+    │                                           │           │
+    │                                           │           │
+    │                                           ▼           │
     │                                  ┌─────────────────┐  │
     └─────────────────────────────────►│  Event Handler  │──┘
                                        └─────────────────┘
-                                               │
-                                               │
-                                               ▼
-                                     ┌─────────────────┐
-                                     │   SharePoint    │
-                                     │  (File Storage) │
-                                     └─────────────────┘
+                                                │
+                                                │
+                                                ▼
+                                       ┌─────────────────┐
+                                       │   SharePoint    │
+                                       │  (File Storage) │
+                                       └─────────────────┘
 
 Key Components:
 1. LINE Webhook (/api/v1/webhook)
@@ -152,7 +152,7 @@ backend/
 │   ├── models/
 │   │   ├── message.py
 │   │   ├── group.py
-│   │   └─�� account.py
+│   │   └── account.py
 │   └── main.py
 ├── Dockerfile
 └── requirements.txt
