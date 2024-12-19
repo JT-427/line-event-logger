@@ -20,7 +20,8 @@ class LineEvent(Document):
         'indexes': [
             'webhook_event_id',
             'timestamp',
-            ('source.type', 'source.user_id', 'source.group_id')
+            ('source.type', 'source.user_id', 'source.group_id'),
+            'bot_id'
         ]
     }
     
@@ -32,6 +33,7 @@ class LineEvent(Document):
     message = DictField()  # 如果是訊息事件，則包含訊息內容
     raw_data = DictField(required=True)  # 儲存完整的原始事件資料
     created_at = DateTimeField(default=datetime.utcnow)
+    bot_id = StringField(required=True)  # LINE Bot 的 Channel ID
 
 class Message(Document):
     """訊息記錄"""
@@ -40,7 +42,8 @@ class Message(Document):
         'indexes': [
             'message_id',
             'timestamp',
-            ('chat_type', 'chat_id')
+            ('chat_type', 'chat_id'),
+            'bot_id'
         ]
     }
     
@@ -80,3 +83,4 @@ class Message(Document):
     raw_data = DictField(required=True)
     
     created_at = DateTimeField(default=datetime.utcnow)
+    bot_id = StringField(required=True)  # LINE Bot 的 Channel ID

@@ -62,7 +62,7 @@ async def handle_file_message(message_data: dict, storage_manager: StorageManage
     
     return file_info
 
-@router.post("/webhook")
+@router.post("/line")
 async def line_webhook(
     request: Request,
     x_line_signature: str = Header(None)
@@ -79,6 +79,9 @@ async def line_webhook(
     logger.info(f"Received event data: {event_data}")
     storage_manager = StorageManager()
     
+    # 從 destination 取得 bot_id
+    bot_id = event_data.get("destination")
+    
     for event in event_data.get("events", []):
         # 儲存原始事件
         line_event = LineEvent(
@@ -88,7 +91,8 @@ async def line_webhook(
             timestamp=datetime.fromtimestamp(event.get("timestamp") / 1000),
             source=event.get("source", {}),
             message=event.get("message", {}),
-            raw_data=event
+            raw_data=event,
+            bot_id=bot_id
         )
         line_event.save()
         
@@ -104,7 +108,8 @@ async def line_webhook(
                 message_type=message_type,
                 sender_id=event["source"].get("userId"),
                 timestamp=datetime.fromtimestamp(event["timestamp"] / 1000),
-                raw_data=message_data
+                raw_data=message_data,
+                bot_id=bot_id
             )
             
             # 根據訊息類型處理
