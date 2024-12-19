@@ -46,3 +46,7 @@ data/db/
 
 # nginx
 nginx/
+
+# 部署
+DEPLOYMENT.prod.md
+DEPLOYMENT.test.md
