@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    depends_on:
+      - api
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    env_file:
+      - .env.prod
+    volumes:
+      - ./backend/app:/app/app
+      - ./logs:/app/logs
+    depends_on:
+      - db
+      - mongodb
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:13
+    env_file:
+      - .env.prod
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:4.4
+    volumes:
+      - mongodb_data:/data/db
+    expose:
+      - "27017"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongodb_data:
