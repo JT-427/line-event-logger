@@ -5,6 +5,8 @@ from app.core.config import settings
 from app.api.v1.api import api_router
 import time
 from pymongo.errors import ConnectionFailure
+from fastapi.staticfiles import StaticFiles
+import os
 
 def connect_to_mongodb(retries=5, delay=5):
     """嘗試連接到 MongoDB，如果失敗則重試"""
@@ -33,6 +35,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 設定靜態檔案服務
+# 確保 storage 目錄存在
+storage_dir = os.path.join(os.getcwd(), "storage")
+if not os.path.exists(storage_dir):
+    os.makedirs(storage_dir)
+
+# 掛載 storage 目錄為靜態檔案服務
+app.mount("/storage", StaticFiles(directory=storage_dir), name="storage")
 
 # 連接 MongoDB（帶重試機制）
 connect_to_mongodb()

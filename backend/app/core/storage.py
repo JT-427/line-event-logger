@@ -251,6 +251,62 @@ class SharePointStorage(BaseStorage):
             print(f"SharePoint delete error: {str(e)}")
             return False
 
+class LocalStorage(BaseStorage):
+    """本地檔案系統儲存服務"""
+    
+    def __init__(self):
+        self.storage_dir = os.path.join(os.getcwd(), "storage")
+        self._ensure_storage_dir()
+    
+    def _ensure_storage_dir(self):
+        """確保儲存目錄存在"""
+        if not os.path.exists(self.storage_dir):
+            os.makedirs(self.storage_dir)
+    
+    async def upload_file(self, file_content: bytes, file_name: str, content_type: str) -> dict:
+        try:
+            # 生成唯一的檔案名稱
+            storage_file_name = FileNameGenerator.generate_unique_name(file_name)
+            file_path = os.path.join(self.storage_dir, storage_file_name)
+            
+            # 確保有正確的 content type
+            if not content_type:
+                content_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+            
+            # 寫入檔案
+            with open(file_path, "wb") as f:
+                f.write(file_content)
+            
+            # 取得檔案大小
+            file_size = os.path.getsize(file_path)
+            
+            # 生成檔案 URL（使用相對路徑）
+            file_url = f"/storage/{storage_file_name}"
+            
+            return StorageResponse(
+                file_id=storage_file_name,  # 使用檔案名稱作為 ID
+                storage_file_name=storage_file_name,
+                original_file_name=file_name,
+                file_url=file_url,
+                content_type=content_type,
+                size=file_size
+            ).to_dict()
+        
+        except Exception as e:
+            print(f"Local storage upload error: {str(e)}")
+            raise Exception(f"Failed to upload file to local storage: {str(e)}") from e
+    
+    async def delete_file(self, file_id: str) -> bool:
+        try:
+            file_path = os.path.join(self.storage_dir, file_id)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                return True
+            return False
+        except Exception as e:
+            print(f"Local storage delete error: {str(e)}")
+            return False
+
 class StorageManager:
     """儲存管理器"""
     
